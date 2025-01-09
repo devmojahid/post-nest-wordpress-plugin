@@ -256,13 +256,13 @@ class Settings {
         wp_enqueue_script('wp-components');
         wp_enqueue_script('wp-api-fetch');
 
-        wp_enqueue_script(
-            'post-nest-settings',
-            POST_NEST_URL . 'assets/dist/settings.js',
+            wp_enqueue_script(
+                'post-nest-settings',
+                POST_NEST_URL . 'assets/dist/settings.js',
             array_merge(['wp-element', 'wp-components', 'wp-api-fetch'], $asset_file['dependencies']),
-            $asset_file['version'],
-            true
-        );
+                $asset_file['version'],
+                true
+            );
 
         // Add type="module" to the script tag
         add_filter('script_loader_tag', function($tag, $handle) {
