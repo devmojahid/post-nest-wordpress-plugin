@@ -12,16 +12,36 @@ import SocialAccounts from './pages/SocialAccounts';
  */
 export async function initializeApp(root) {
     try {
-        // Get the base URL from WordPress settings
-        const baseUrl = window.postNestSettings?.adminUrl ?? '/';
+        // Get the WordPress admin URL for basename
+        const adminUrl = window.postNestSettings?.adminUrl ?? '/';
+        const basename = import.meta.env.DEV ? '/' : new URL(adminUrl).pathname;
+
+        // Mock postNestSettings for development
+        if (import.meta.env.DEV && !window.postNestSettings) {
+            window.postNestSettings = {
+                user: {
+                    id: 1,
+                    name: 'Dev User',
+                    email: 'dev@example.com',
+                    avatar: 'https://www.gravatar.com/avatar/default'
+                },
+                apiUrl: '/api',
+                nonce: 'dev-nonce',
+                adminUrl: '/',
+                capabilities: {
+                    canManageOptions: true,
+                    canPublishPosts: true
+                }
+            };
+        }
 
         // Render the app
         root.render(
             <React.StrictMode>
                 <ErrorBoundary>
-                    <BrowserRouter basename={baseUrl}>
+                    <BrowserRouter basename={basename}>
                         <Routes>
-                            <Route path="/" element={<Layout />}>
+                            <Route path="/*" element={<Layout />}>
                                 <Route index element={<Dashboard />} />
                                 <Route path="social-accounts" element={<SocialAccounts />} />
                             </Route>

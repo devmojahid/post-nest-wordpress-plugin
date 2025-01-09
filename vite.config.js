@@ -4,17 +4,14 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-//   base: '/',
-  root: path.resolve(__dirname, 'src'),
+  root: path.resolve(__dirname, 'src/admin/settings'),
+  base: process.env.NODE_ENV === 'production' ? '/wp-content/plugins/post-nest/assets/dist/' : '/',
   build: {
     manifest: true,
-    outDir: 'assets/dist',
+    outDir: path.resolve(__dirname, 'assets/dist'),
+    emptyOutDir: true,
     rollupOptions: {
-      input: {
-        settings: path.resolve(__dirname, 'src/admin/settings/index.jsx'),
-        // 'social-dashboard': path.resolve(__dirname, 'src/admin/pages/social-dashboard/index.jsx'),
-        // 'analytics-dashboard': path.resolve(__dirname, 'src/admin/pages/analytics-dashboard/index.jsx')
-      },
+      input: path.resolve(__dirname, 'src/admin/settings/index.jsx'),
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: 'chunks/[name].[hash].js',
@@ -24,16 +21,23 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    },
-    extensions: ['.js', '.jsx', '.ts', '.tsx']
+      '@': path.resolve(__dirname, 'src')
+    }
   },
   server: {
-    port: 5173,
+    cors: true,
     strictPort: true,
+    port: 5173,
     hmr: {
       protocol: 'ws',
       host: 'localhost',
+      port: 5173
+    },
+    headers: {
+      'Access-Control-Allow-Origin': '*'
     }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom']
   }
 });

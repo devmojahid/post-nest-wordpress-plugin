@@ -1,12 +1,9 @@
 import { createRoot } from 'react-dom/client';
-// import { __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { initializeApp } from './app.jsx';
 
-/**
- * Initialize the React application
- * @throws {Error} If the container is not found
- * @returns {Promise<void>}
- */
+let root = null;
+
 export async function bootstrap() {
     const loadingElement = document.getElementById('post-nest-settings-loading');
     const container = document.getElementById('post-nest-settings');
@@ -16,8 +13,10 @@ export async function bootstrap() {
     }
 
     try {
-        // Create React root
-        const root = createRoot(container);
+        // Create root only if it doesn't exist
+        if (!root) {
+            root = createRoot(container);
+        }
 
         // Initialize the app
         await initializeApp(root);
@@ -34,7 +33,7 @@ export async function bootstrap() {
         if (loadingElement) {
             loadingElement.innerHTML = `
                 <div class="post-nest-loading-content error">
-                    <p>Error loading Post Nest. Please refresh the page.</p>
+                    <p>${__('Error loading Post Nest. Please refresh the page.', 'post-nest')}</p>
                     <pre>${error.message}</pre>
                 </div>
             `;
@@ -42,6 +41,4 @@ export async function bootstrap() {
         
         throw error;
     }
-} 
-
-{/* <p>${__('Error loading Post Nest. Please refresh the page.', 'post-nest')}</p> */}
+}

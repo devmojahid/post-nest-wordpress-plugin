@@ -44,6 +44,9 @@ class Settings {
     }
 
     public function render_settings_page(): void {
+        // Add nonce for security
+        wp_nonce_field('post_nest_settings', 'post_nest_nonce');
+        
         // Add a loading state container
         echo '<div id="post-nest-settings-loading" class="post-nest-loading">
                 <div class="post-nest-loading-content">
@@ -53,7 +56,18 @@ class Settings {
               </div>';
         
         // Main app container
-        echo '<div id="post-nest-settings" class="wrap" ></div>';
+        echo '<div id="post-nest-settings" class="wrap"></div>';
+
+        // In development mode, add the Vite client
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            echo '<script type="module">
+                import RefreshRuntime from "http://localhost:5173/@react-refresh"
+                RefreshRuntime.injectIntoGlobalHook(window)
+                window.$RefreshReg$ = () => {}
+                window.$RefreshSig$ = () => (type) => type
+                window.__vite_plugin_react_preamble_installed__ = true
+            </script>';
+        }
     }
 
     public function inject_settings_data(): void {
@@ -62,11 +76,14 @@ class Settings {
             return;
         }
 
+        // Get the admin URL without query parameters
+        $admin_url = admin_url();
+        
         // Inject initial state/data
         $settings_data = [
             'apiUrl' => rest_url('post-nest/v1'),
             'nonce' => wp_create_nonce('wp_rest'),
-            'adminUrl' => admin_url(),
+            'adminUrl' => $admin_url,
             'user' => $this->get_user_data(),
             'initialRoute' => $this->get_initial_route(),
             'capabilities' => $this->get_user_capabilities(),
@@ -107,30 +124,30 @@ class Settings {
         wp_enqueue_script('wp-components');
         wp_enqueue_script('wp-api-fetch');
         
+        // Add development scripts with proper type="module"
+        add_filter('script_loader_tag', function($tag, $handle) {
+            if (in_array($handle, ['post-nest-settings-dev', 'post-nest-settings'])) {
+                return str_replace('<script', '<script type="module" crossorigin="true"', $tag);
+            }
+            return $tag;
+        }, 10, 2);
+
         // Enqueue Vite's development scripts
         wp_enqueue_script(
             'post-nest-settings-dev',
             'http://localhost:5173/@vite/client',
-            ['wp-element'],
+            [],
             null,
             true
         );
 
         wp_enqueue_script(
             'post-nest-settings',
-            'http://localhost:5173/src/admin/settings/index.jsx',
-            ['post-nest-settings-dev', 'wp-element', 'wp-components', 'wp-api-fetch'],
+            'http://localhost:5173/index.jsx',
+            ['post-nest-settings-dev'],
             null,
             true
         );
-
-        // Add type="module" to the script tags
-        add_filter('script_loader_tag', function($tag, $handle) {
-            if (in_array($handle, ['post-nest-settings', 'post-nest-settings-dev'])) {
-                return str_replace('<script', '<script type="module"', $tag);
-            }
-            return $tag;
-        }, 10, 2);
     }
 
     private function enqueue_production_assets(): void {
