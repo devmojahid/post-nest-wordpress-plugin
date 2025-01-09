@@ -1,6 +1,6 @@
+import './styles/main.css';
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { bootstrap } from './bootstrap';
+import { bootstrap, cleanup } from './bootstrap';
 
 // Only initialize in WordPress context
 if (window.postNestSettings) {
@@ -9,13 +9,12 @@ if (window.postNestSettings) {
     } else {
         bootstrap();
     }
+
+    // Add cleanup on unload
+    window.addEventListener('unload', cleanup);
 }
 
 // For Vite development server
 if (import.meta.env.DEV && !window.postNestSettings) {
-    const container = document.getElementById('post-nest-settings');
-    if (container) {
-        const root = createRoot(container);
-        bootstrap(root);
-    }
+    bootstrap();
 } 

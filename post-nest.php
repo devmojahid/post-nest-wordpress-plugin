@@ -136,6 +136,10 @@ if (!class_exists('PostNest')) {
             if (!defined('POST_NEST_DEBUG')) {
                 define('POST_NEST_DEBUG', WP_DEBUG);
             }
+            
+            if(!defined('POST_NEST_DEV_MODE')) {
+                define('POST_NEST_DEV_MODE', defined('WP_DEBUG') && WP_DEBUG && file_exists(__DIR__ . '/src'));
+            }
         }
         /**
          * Initialize Hooks

@@ -1,11 +1,26 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+import cssnano from 'cssnano';
 
 export default defineConfig({
   plugins: [react()],
   root: path.resolve(__dirname, 'src/admin/settings'),
-  base: process.env.NODE_ENV === 'production' ? '/wp-content/plugins/post-nest/assets/dist/' : '/',
+//   base: process.env.NODE_ENV === 'production' ? '/wp-content/plugins/post-nest/assets/dist/' : '/',
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
+  css: {
+    postcss: {
+      plugins: [tailwindcss({
+        config: './tailwind.config.js'
+      }),
+    autoprefixer],
+    cssnano: {
+      preset: 'default',
+    },
+    },
+  },
   build: {
     manifest: true,
     outDir: path.resolve(__dirname, 'assets/dist'),
@@ -15,7 +30,12 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: 'chunks/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash][extname]'
+        assetFileNames: ({name}) => {
+            if (/\.css$/.test(name ?? '')) {
+              return 'assets/index.css';
+            }
+            return 'assets/[name][extname]';
+          }
       }
     }
   },

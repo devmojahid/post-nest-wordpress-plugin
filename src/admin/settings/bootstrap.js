@@ -2,18 +2,20 @@ import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
 import { initializeApp } from './app.jsx';
 
+// Store root globally but outside the function
+const ROOT_ELEMENT_ID = 'post-nest-settings';
 let root = null;
 
 export async function bootstrap() {
     const loadingElement = document.getElementById('post-nest-settings-loading');
-    const container = document.getElementById('post-nest-settings');
+    const container = document.getElementById(ROOT_ELEMENT_ID);
 
     if (!container) {
         throw new Error('Post Nest settings container not found');
     }
 
     try {
-        // Create root only if it doesn't exist
+        // Only create root once
         if (!root) {
             root = createRoot(container);
         }
@@ -38,7 +40,13 @@ export async function bootstrap() {
                 </div>
             `;
         }
-        
-        throw error;
+    }
+}
+
+// Clean up function
+export function cleanup() {
+    if (root) {
+        root.unmount();
+        root = null;
     }
 }

@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for WordPress admin compatibility */
+.pn-app {
+    /* Reset WordPress admin styles */
+    all: revert;
+    
+    /* Your custom styles */
+    @apply text-gray-900;
+}
+
+/* Enhanced Loading Screen Styles */
+.post-nest-loading {
+    @apply fixed inset-0 bg-white/95 backdrop-blur-sm z-[99999] flex items-center justify-center;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.post-nest-loading-content {
+    @apply text-center flex flex-col items-center justify-center space-y-4 p-8;
+}
+
+/* Custom Loading Spinner */
+.post-nest-loading .spinner {
+    @apply relative w-12 h-12 mb-4;
+    animation: spin 1s linear infinite;
+}
+
+.post-nest-loading .spinner::before {
+    content: '';
+    @apply absolute inset-0 rounded-full border-4 border-primary-200;
+    border-top-color: theme('colors.primary.600');
+    animation: spin 1s linear infinite;
+}
+
+/* Loading Text Animation */
+.post-nest-loading-content span {
+    @apply text-lg font-medium text-gray-700;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Loading Logo */
+.post-nest-loading-logo {
+    @apply w-16 h-16 mb-4 relative;
+}
+
+.post-nest-loading-logo::before {
+    content: '📮';
+    @apply text-4xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+    animation: bounce 1s infinite;
+}
+
+/* Custom Animations */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(-25%) scale(1);
+    }
+    50% {
+        transform: translateY(0) scale(1.1);
+    }
+}
+
+/* Custom styles */
+@layer components {
+  .pn-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+  }
+  .pn-button-primary {
+    @apply px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors;
+  }
+  .pn-button-secondary {
+    @apply px-4 py-2 bg-secondary-100 text-secondary-700 rounded-lg hover:bg-secondary-200 transition-colors;
+  }
+} 
